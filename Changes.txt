@@ -1,0 +1,9 @@
+TODO
+
+Fix formatting errors so that divider bars dont move as much
+Set File Tree Icons
+Implement Run Command
+Change some colors around
+Add in more icons
+Confirmation before exiting if a document has not been saved
+allow for switching between html editor, rtf editor, web view and plain text editor

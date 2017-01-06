@@ -5,17 +5,25 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextArea;
+import javafx.scene.image.*;
+import javafx.scene.image.Image;
+import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+import sun.plugin.javascript.navig.Anchor;
 import sun.reflect.generics.tree.Tree;
 
 import javax.swing.*;
+import javax.swing.border.LineBorder;
+import java.awt.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Vector;
+import javafx.scene.paint.Color;
 
 public class Controller {
 
@@ -26,7 +34,13 @@ public class Controller {
     private AnchorPane anchorPane;
 
     @FXML
-    private TreeView FileTree;
+    private MenuItem closeItem;
+
+    @FXML
+    private SplitPane splitPane;
+
+    @FXML
+    private AnchorPane aPane;
 
 
     @FXML
@@ -47,7 +61,19 @@ public class Controller {
     void addTab(ActionEvent event) {
         //tabbedPane.getTabs().add(new Tab("Untitled"));
         TextArea textArea = new TextArea();
-        tabbedPane.getTabs().add(new Tab("untitled", textArea));
+        BorderStroke bs = new BorderStroke(Color.LIGHTGRAY, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, new BorderWidths(3));
+        Border b = new Border(bs);
+        textArea.setBorder(b);
+        tabbedPane.getTabs().add(new Tab("Untitled", textArea));
+    }
+
+    /**
+     * Add a new tab with an empty textfield
+     * @param event
+     */
+    @FXML
+    void close(ActionEvent event) {
+        tabbedPane.getTabs().remove(tabbedPane.getSelectionModel().getSelectedIndex());
     }
 
     /**
@@ -108,6 +134,69 @@ public class Controller {
     }
 
     /**
+     * Add in a file tree to the view
+     */
+    @FXML
+    void setUpFileTree() {
+        TreeView t = new TreeView(addNodes(new TreeItem("[files]"), new File(".")));
+        t.setBorder(new Border(new BorderStroke(Color.LIGHTGRAY, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, new BorderWidths(3))));
+        splitPane.getItems().set(0, t);
+        splitPane.setDividerPosition(0, .25);
+        //t.setMinSize(aPane.getWidth(), aPane.getMinHeight());
+    }
+
+    /**
+     * Set up the file tree
+     * @param currentTop
+     * @param dir
+     * @return
+     */
+    public TreeItem addNodes(TreeItem currentTop, File dir) {
+        currentTop.setExpanded(true);
+        //this only recognizes files in cwd.
+        Node folderIcon = new ImageView(new Image(getClass().getResourceAsStream("folder@32x32.png")));
+        String currentPath = dir.getPath();
+        TreeItem<String> currentDir = new TreeItem<String>(currentPath);
+        currentDir.setGraphic(folderIcon);
+        if (!currentTop.getValue().equals("[files]")) {
+            currentTop.getChildren().add(currentDir);
+        }
+        Vector ol = new Vector();
+        String[] tmp = dir.list();
+        for (int i = 0; i < tmp.length; i++) {
+            ol.addElement(tmp[i]);
+        }
+        Collections.sort(ol, String.CASE_INSENSITIVE_ORDER);
+        File f;
+        Vector files = new Vector();
+        for (int i = 0; i < ol.size(); i++) {
+            String thisObject = (String) ol.elementAt(i);
+            String newPath;
+            if (currentPath.equals(".")) {
+                newPath = thisObject;
+            } else {
+                newPath = new String(currentPath + File.separator + thisObject + File.separator);
+            }
+            if ((f = new File(newPath)).isDirectory() && !newPath.contains("git")) {
+                addNodes(currentDir, f);
+            } else {
+                files.addElement(thisObject);
+            }
+        }
+        TreeItem x;
+        Node fileGraphic = new ImageView(new Image(getClass().getResourceAsStream("file-9@32x32.png")));
+        for (int fnum = 0; fnum < files.size(); fnum++) {
+            x = new TreeItem<String>((String) files.elementAt(fnum));
+            //x.setGraphic(fileGraphic);
+            currentDir.getChildren().add(x);
+        }
+        return currentDir;
+
+
+    }
+
+
+    /**
      * return the contents of the currently selected tab in a tabpane.
      * cast the node to whatever it needs to be.
      * @param tabbedPane
@@ -126,44 +215,5 @@ public class Controller {
         return tabbedPane.getSelectionModel().getSelectedItem();
     }
 
-    void configureFileTree(TreeView tree) {
-
-
-    }
-
-    //remains to be seen if this code makes any sense with javafx (it probably does not)
-    TreeItem addNodes(TreeItem top, File dir) {
-        String currentPath = dir.getPath();
-        TreeItem currentDirectory = new TreeItem(currentPath);
-        if (top != null) {
-            top.getChildren().add(currentDirectory);
-        }
-        Vector ol = new Vector();
-        String[] tmp = dir.list();
-        for (int i = 0; i < tmp.length; i++)
-            ol.addElement(tmp[i]);
-        Collections.sort(ol, String.CASE_INSENSITIVE_ORDER);
-        File f;
-        Vector files = new Vector();
-        for (int i = 0; i < ol.size(); i++) {
-            String thisObject = (String) ol.elementAt(i);
-            String newPath;
-
-            if (currentPath.equals(".")) {
-                newPath = currentPath;
-            } else {
-                newPath = new String(currentPath + File.separator + thisObject + "/");
-            }
-            if ((f = new File(newPath)).isDirectory()) {
-                addNodes(currentDirectory, f);
-            } else {
-                files.addElement(thisObject);
-            }
-        }
-        for (int fnum = 0; fnum < files.size(); fnum++) {
-            currentDirectory.getChildren().add(new TreeItem(files.elementAt(fnum)));
-        }
-        return currentDirectory;
-
-    }
+    //consider creating a custom class to hold the  tree view which would extend from Treeview itself, so as to avoid issues
 }
