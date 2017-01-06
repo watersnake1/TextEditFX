@@ -117,6 +117,7 @@ public class Controller {
         catch (FileNotFoundException e) {
             JOptionPane.showMessageDialog(new JFrame(), "File Not Found");
         } catch (IOException e) {
+            JOptionPane.showMessageDialog(new JFrame(), "File IO error. Requested File inaccessible");
             e.printStackTrace();
         }
         char[] buffer = new char[100000000];
@@ -124,13 +125,13 @@ public class Controller {
         try {
             n = inBound.read(buffer);
         } catch (IOException e) {
+            JOptionPane.showMessageDialog(new JFrame(), "File Read Error. Cannot read from selected file");
             e.printStackTrace();
         }
         String text = new String(buffer, 0, n);
-        TextArea t = (TextArea) getCurrentTabContent(tabbedPane);
-        t.setText(text);
-        Tab tab = getCurrentTab(tabbedPane);
-        tab.setText(target.getName());
+        TextArea t = new TextArea(text);
+        Tab tab = new Tab(target.getName(), t);
+        tabbedPane.getTabs().add(tab);
     }
 
     /**
@@ -143,6 +144,14 @@ public class Controller {
         splitPane.getItems().set(0, t);
         splitPane.setDividerPosition(0, .25);
         //t.setMinSize(aPane.getWidth(), aPane.getMinHeight());
+    }
+
+    /**
+     * Run a command from the bottom text field
+     */
+    @FXML
+    void runCommand() {
+
     }
 
     /**

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.text.*?>
 <?import javafx.scene.control.*?>
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
@@ -36,6 +38,7 @@
                               <MenuItem mnemonicParsing="false" onAction="#addTab" text="Add Tab" />
                           </items>
                         </Menu>
+                        <Menu mnemonicParsing="false" text="Editor" />
                       <Menu mnemonicParsing="false" text="Help">
                         <items>
                           <MenuItem mnemonicParsing="false" onAction="#about" text="About" />
@@ -47,7 +50,19 @@
                      <items>
                         <TabPane fx:id="tabbedPane" layoutX="156.0" layoutY="139.0" prefHeight="523.0" prefWidth="584.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="28.0">
                           <tabs>
-                            <Tab text="Welcome" />
+                            <Tab text="Welcome">
+                                 <content>
+                                    <AnchorPane>
+                                       <children>
+                                          <Label layoutX="138.0" layoutY="193.0" text="Welcome" AnchorPane.leftAnchor="138.0" AnchorPane.rightAnchor="115.0">
+                                             <font>
+                                                <Font size="63.0" />
+                                             </font>
+                                          </Label>
+                                          <Label layoutX="120.0" layoutY="264.0" text="Go to View -&gt; Add Tab or open a file to begin editing" AnchorPane.leftAnchor="120.0" AnchorPane.rightAnchor="80.0" />
+                                       </children>
+                                    </AnchorPane>
+                                 </content></Tab>
                           </tabs>
                            <contextMenu>
                               <ContextMenu>
@@ -56,6 +71,9 @@
                                 </items>
                               </ContextMenu>
                            </contextMenu>
+                           <effect>
+                              <Blend />
+                           </effect>
                         </TabPane>
                         <AnchorPane>
                            <children>
